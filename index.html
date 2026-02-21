@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastermind Duel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mastermind Duel</h1>
+            <p>Two players compete to crack each other's codes!</p>
+        </header>
+
+        <main id="game-container">
+            <!-- Multiplayer Mode Selection -->
+            <section id="mode-selection" class="game-mode">
+                <h2>Select Game Mode</h2>
+                <div class="multiplayer-options">
+                    <div class="option-group">
+                        <h3>Play Locally</h3>
+                        <div class="mode-buttons">
+                            <button id="local-turn-based-btn" class="mode-btn">
+                                <h3>Turn-Based</h3>
+                                <p>Take turns on same device</p>
+                            </button>
+                            <button id="local-race-btn" class="mode-btn">
+                                <h3>Race Mode</h3>
+                                <p>Compete on same device</p>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <h3>Play Online</h3>
+                        <div class="mode-buttons">
+                            <button id="online-turn-based-btn" class="mode-btn">
+                                <h3>Online Turn-Based</h3>
+                                <p>Play with friend online</p>
+                            </button>
+                            <button id="online-race-btn" class="mode-btn">
+                                <h3>Online Race</h3>
+                                <p>Race against friend online</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Online Multiplayer -->
+            <section id="online-multiplayer" class="hidden">
+                <h2>Online Multiplayer</h2>
+                <div class="mode-options">
+                    <button id="online-turn-based-btn" class="mode-btn">
+                        <h3>Online Turn-Based</h3>
+                        <p>Take turns guessing codes over the internet</p>
+                    </button>
+                    <button id="online-race-btn" class="mode-btn">
+                        <h3>Online Race</h3>
+                        <p>Race to crack the code over the internet</p>
+                    </button>
+                </div>
+                
+                <div class="warning" style="background: #1b2d1b; border: 2px solid #44ff44; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center;">
+                    <h3 style="color: #ffffff; margin-bottom: 10px;">✅ GitHub Pages Multiplayer</h3>
+                    <p style="color: #cccccc;">This version uses Firebase for real multiplayer that works on GitHub Pages!</p>
+                    <div style="color: #cccccc; margin-top: 10px; font-size: 0.9rem;">
+                        <p>🌐 Works from anywhere in the world</p>
+                        <p>� No port forwarding required</p>
+                        <p>⚡ Real-time gameplay</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Online Room Management -->
+            <section id="room-management" class="hidden">
+                <h2>Online Game Room</h2>
+                <div class="room-options">
+                    <div class="room-actions">
+                        <button id="create-room-btn" class="room-btn">
+                            <h3>Create Room</h3>
+                            <p>Host a new game</p>
+                        </button>
+                        <button id="join-room-btn" class="room-btn">
+                            <h3>Join Room</h3>
+                            <p>Enter room code</p>
+                        </button>
+                    </div>
+                    <div id="room-code-section" class="hidden">
+                        <div class="room-code-display">
+                            <label>Room Code:</label>
+                            <input type="text" id="room-code" placeholder="Enter code" maxlength="6">
+                            <button id="join-room-submit">Join</button>
+                        </div>
+                    </div>
+                    <div id="waiting-room" class="hidden">
+                        <div class="waiting-info">
+                            <h3>Waiting for opponent...</h3>
+                            <div class="room-code-display">
+                                <label>Share this code:</label>
+                                <div class="code-display" id="generated-code"></div>
+                                <button id="copy-code">Copy</button>
+                            </div>
+                            <div class="players-status">
+                                <div class="player-status">
+                                    <span class="player-name">Player 1 (You)</span>
+                                    <span class="status connected">Connected</span>
+                                </div>
+                                <div class="player-status">
+                                    <span class="player-name">Player 2</span>
+                                    <span class="status waiting">Waiting...</span>
+                                </div>
+                            </div>
+                            <button id="cancel-room">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Code Setup Phase -->
+            <section id="code-setup" class="hidden">
+                <h2 id="setup-title">Player 1: Set Your Secret Code</h2>
+                <div class="setup-area">
+                    <div class="code-slots" id="setup-slots">
+                        <div class="slot" data-position="0"></div>
+                        <div class="slot" data-position="1"></div>
+                        <div class="slot" data-position="2"></div>
+                        <div class="slot" data-position="3"></div>
+                    </div>
+                    <div class="color-palette">
+                        <div class="color" data-color="red" style="background-color: #ff4444;"></div>
+                        <div class="color" data-color="blue" style="background-color: #4444ff;"></div>
+                        <div class="color" data-color="green" style="background-color: #44ff44;"></div>
+                        <div class="color" data-color="yellow" style="background-color: #ffff44;"></div>
+                        <div class="color" data-color="orange" style="background-color: #ff8844;"></div>
+                        <div class="color" data-color="purple" style="background-color: #ff44ff;"></div>
+                    </div>
+                    <button id="confirm-code" disabled>Confirm Code</button>
+                </div>
+                <div class="privacy-notice">
+                    <p>🔒 Make sure your opponent can't see your screen!</p>
+                </div>
+            </section>
+
+            <!-- Turn-Based Game -->
+            <section id="turn-based-game" class="hidden">
+                <div class="game-info">
+                    <div class="current-player" id="current-player">Player 1's Turn</div>
+                    <div class="attempts-info">
+                        <span>Player 1 Attempts: <span id="p1-attempts">0</span>/10</span>
+                        <span>Player 2 Attempts: <span id="p2-attempts">0</span>/10</span>
+                    </div>
+                </div>
+
+                <div class="game-boards">
+                    <!-- Player 1 Board (guessing Player 2's code) -->
+                    <div class="player-board" id="p1-board">
+                        <h3>Player 1 - Guessing Player 2's Code</h3>
+                        <div class="guess-history" id="p1-history"></div>
+                        <div class="current-guess">
+                            <div class="guess-slots" id="p1-current">
+                                <div class="slot" data-position="0"></div>
+                                <div class="slot" data-position="1"></div>
+                                <div class="slot" data-position="2"></div>
+                                <div class="slot" data-position="3"></div>
+                            </div>
+                            <div class="feedback-box">
+                                <div class="feedback-slot" id="p1-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="color-palette">
+                            <div class="color" data-color="red" style="background-color: #ff4444;"></div>
+                            <div class="color" data-color="blue" style="background-color: #4444ff;"></div>
+                            <div class="color" data-color="green" style="background-color: #44ff44;"></div>
+                            <div class="color" data-color="yellow" style="background-color: #ffff44;"></div>
+                            <div class="color" data-color="orange" style="background-color: #ff8844;"></div>
+                            <div class="color" data-color="purple" style="background-color: #ff44ff;"></div>
+                        </div>
+                        <button id="p1-submit" disabled>Submit Guess</button>
+                    </div>
+
+                    <!-- Player 2 Board (guessing Player 1's code) -->
+                    <div class="player-board" id="p2-board">
+                        <h3>Player 2 - Guessing Player 1's Code</h3>
+                        <div class="guess-history" id="p2-history"></div>
+                        <div class="current-guess">
+                            <div class="guess-slots" id="p2-current">
+                                <div class="slot" data-position="0"></div>
+                                <div class="slot" data-position="1"></div>
+                                <div class="slot" data-position="2"></div>
+                                <div class="slot" data-position="3"></div>
+                            </div>
+                            <div class="feedback-box">
+                                <div class="feedback-slot" id="p2-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="color-palette">
+                            <div class="color" data-color="red" style="background-color: #ff4444;"></div>
+                            <div class="color" data-color="blue" style="background-color: #4444ff;"></div>
+                            <div class="color" data-color="green" style="background-color: #44ff44;"></div>
+                            <div class="color" data-color="yellow" style="background-color: #ffff44;"></div>
+                            <div class="color" data-color="orange" style="background-color: #ff8844;"></div>
+                            <div class="color" data-color="purple" style="background-color: #ff44ff;"></div>
+                        </div>
+                        <button id="p2-submit" disabled>Submit Guess</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Race Mode Game -->
+            <section id="race-game" class="hidden">
+                <div class="game-info">
+                    <div class="race-status">Race Mode - First to Win!</div>
+                    <div class="timer" id="timer">Time: 00:00</div>
+                </div>
+
+                <div class="race-boards">
+                    <!-- Player 1 Race Board -->
+                    <div class="race-board" id="race-p1-board">
+                        <h3>Player 1</h3>
+                        <div class="guess-history" id="race-p1-history"></div>
+                        <div class="current-guess">
+                            <div class="guess-slots" id="race-p1-current">
+                                <div class="slot" data-position="0"></div>
+                                <div class="slot" data-position="1"></div>
+                                <div class="slot" data-position="2"></div>
+                                <div class="slot" data-position="3"></div>
+                            </div>
+                            <div class="feedback-box">
+                                <div class="feedback-slot" id="race-p1-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="color-palette">
+                            <div class="color" data-color="red" style="background-color: #ff4444;"></div>
+                            <div class="color" data-color="blue" style="background-color: #4444ff;"></div>
+                            <div class="color" data-color="green" style="background-color: #44ff44;"></div>
+                            <div class="color" data-color="yellow" style="background-color: #ffff44;"></div>
+                            <div class="color" data-color="orange" style="background-color: #ff8844;"></div>
+                            <div class="color" data-color="purple" style="background-color: #ff44ff;"></div>
+                        </div>
+                        <button id="race-p1-submit" disabled>Submit Guess</button>
+                    </div>
+
+                    <!-- Player 2 Race Board -->
+                    <div class="race-board" id="race-p2-board">
+                        <h3>Player 2</h3>
+                        <div class="guess-history" id="race-p2-history"></div>
+                        <div class="current-guess">
+                            <div class="guess-slots" id="race-p2-current">
+                                <div class="slot" data-position="0"></div>
+                                <div class="slot" data-position="1"></div>
+                                <div class="slot" data-position="2"></div>
+                                <div class="slot" data-position="3"></div>
+                            </div>
+                            <div class="feedback-box">
+                                <div class="feedback-slot" id="race-p2-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="color-palette">
+                            <div class="color" data-color="red" style="background-color: #ff4444;"></div>
+                            <div class="color" data-color="blue" style="background-color: #4444ff;"></div>
+                            <div class="color" data-color="green" style="background-color: #44ff44;"></div>
+                            <div class="color" data-color="yellow" style="background-color: #ffff44;"></div>
+                            <div class="color" data-color="orange" style="background-color: #ff8844;"></div>
+                            <div class="color" data-color="purple" style="background-color: #ff44ff;"></div>
+                        </div>
+                        <button id="race-p2-submit" disabled>Submit Guess</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game Over Screen -->
+            <section id="game-over" class="hidden">
+                <h2 id="winner-text">Game Over!</h2>
+                <div id="final-scores"></div>
+                <button id="play-again">Play Again</button>
+                <button id="back-to-menu">Back to Menu</button>
+            </section>
+        </main>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script src="github-websocket.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
